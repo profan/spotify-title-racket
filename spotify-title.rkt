@@ -52,7 +52,7 @@
         #:exists 'replace))]))
 
 ; constants
-(define pid-and-title-regex #px"[^\\s]+\\s+\\d+\\s+(\\d+)\\s+[^\\s]+(.+)")
+(define pid-and-title-regex #px"[^\\s]+\\s+\\d+\\s+(\\d+)\\s+[^\\s]+\\s+(.+)")
 
 (let loop ([continue? (loop-mode)])
   (define spotify-pid
@@ -68,7 +68,7 @@
     (match pid-and-title
       [(list pid title)
        (when (string=? spotify-pid pid)
-         (write-to-file-if-changed target-filename (string-trim title)))]))
+         (write-to-file-if-changed target-filename title))]))
   (cond
     [continue?
      (begin
