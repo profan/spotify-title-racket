@@ -34,6 +34,23 @@
   (with-output-to-string
     (lambda () (system cmd))))
 
+(define (write-to-file-if-changed path content)
+  (define current-content
+    (call-with-input-file
+     path
+     (lambda (in)
+       (read-line in))))
+  (cond
+    [(string=? content current-content) #f]
+    [else
+     (begin
+       (displayln (format "content changed, writing ~a to ~a!" content path))
+       (call-with-output-file
+        path
+        (lambda (out)
+          (display content out))
+        #:exists 'replace))]))
+
 ; constants
 (define pid-and-title-regex #px"[^\\s]+\\s+\\d+\\s+(\\d+)\\s+[^\\s]+(.+)")
 
@@ -51,9 +68,7 @@
     (match pid-and-title
       [(list pid title)
        (when (string=? spotify-pid pid)
-         (with-output-to-file target-filename
-           (lambda () (printf title))
-           #:exists 'replace))]))
+         (write-to-file-if-changed target-filename (string-trim title)))]))
   (cond
     [continue?
      (begin
