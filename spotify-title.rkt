@@ -1,8 +1,12 @@
 #!/usr/bin/env racket
 
-#lang racket
+#lang racket/base
 
+(require racket/string)
 (require racket/cmdline)
+(require racket/system)
+(require racket/match)
+(require racket/port)
 
 (define debug-mode (make-parameter #f))
 (define loop-mode (make-parameter #f))
@@ -68,7 +72,9 @@
     (match pid-and-title
       [(list pid title)
        (when (string=? spotify-pid pid)
-         (write-to-file-if-changed target-filename title))]))
+         (cond
+          [(string=? title "Spotify") (write-to-file-if-changed target-filename "No Song Playing.")]
+          [else (write-to-file-if-changed target-filename (format "Now Playing: ~a" title))]))]))
   (cond
     [continue?
      (begin
